@@ -4,18 +4,14 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../../models/User");
 
-// POST /api/auth/register
+// POST /api/auth/wholesaler/register
 router.post("/register", async (req, res) => {
-  const { name, email, password, role } = req.body;
-
-  if (!["manufacturer", "wholesaler"].includes(role)) {
-    return res.status(400).json({ message: "Invalid role" });
-  }
+  const { name, email, password } = req.body;
 
   try {
-    const existing = await User.findOne({ email, role });
+    const existing = await User.findOne({ email, role: "wholesaler" });
     if (existing) {
-      return res.status(400).json({ message: `${role} already exists` });
+      return res.status(400).json({ message: "Wholesaler already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -24,7 +20,7 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role,
+      role: "wholesaler",
     });
 
     await newUser.save();

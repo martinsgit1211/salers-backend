@@ -1,24 +1,24 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
-const cors = require("cors");
 
 dotenv.config();
 connectDB();
 
-// const cors = require('cors');
-// app.use({ origin: 'http://localhost:5173', credentials: true });
-// // Initialize Express app
-
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// Routes
 app.use("/api/auth", authRoutes);
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Manufacturer Routes
+app.use("/api/manufacturer/register", require("./api/auth/manufacturer/register"));
+app.use("/api/auth/manufacturer/login", require("./api/auth/manufacturer/login"));
+
+// Wholesaler Routes
+app.use("/api/wholesaler/register", require("./api/auth/wholesaler/register"));
+app.use("/api/auth/wholesaler/login", require("./api/auth/wholesaler/login"));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
