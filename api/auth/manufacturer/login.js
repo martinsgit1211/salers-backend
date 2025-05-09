@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email, role: "manufacturer" });
+    const user = await User.findOne({ email, role: "Manufacturer" });
     if (!user) return res.status(404).json({ message: "Manufacturer not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);

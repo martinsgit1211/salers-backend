@@ -9,7 +9,7 @@ router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const existing = await User.findOne({ email, role: "wholesaler" });
+    const existing = await User.findOne({ email, role: "Wholesaler" });
     if (existing) {
       return res.status(400).json({ message: "Wholesaler already exists" });
     }
@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: "wholesaler",
+      role: "Wholesaler",
     });
 
     await newUser.save();

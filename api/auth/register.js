@@ -8,7 +8,7 @@ const User = require("../../../models/User");
 router.post("/register", async (req, res) => {
   const { name, email, password, role } = req.body;
 
-  if (!["manufacturer", "wholesaler"].includes(role)) {
+  if (!["Manufacturer", "Wholesaler"].includes(role)) {
     return res.status(400).json({ message: "Invalid role" });
   }
 

@@ -7,7 +7,7 @@ router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email, role: "manufacturer" });
+    const existingUser = await User.findOne({ email, role: "Manufacturer" });
     if (existingUser) {
       return res.status(400).json({ message: "Manufacturer already exists" });
     }
@@ -18,7 +18,7 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: "manufacturer",
+      role: "Manufacturer",
     });
 
     await newUser.save();

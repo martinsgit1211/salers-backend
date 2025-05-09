@@ -2,6 +2,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+// In-memory token blacklist (optional for demo)
+let blacklistedTokens = [];
+
 // Register user
 const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -55,4 +58,23 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// Logout user
+const logoutUser = (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (token) {
+    blacklistedTokens.push(token);
+    return res.status(200).json({ message: "Logout successful" });
+  }
+  res.status(400).json({ message: "No token provided" });
+};
+
+// Middleware (optional): block blacklisted tokens
+const checkBlacklistedToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (blacklistedTokens.includes(token)) {
+    return res.status(401).json({ message: "Token has been logged out" });
+  }
+  next();
+};
+
+module.exports = { registerUser, loginUser, logoutUser, checkBlacklistedToken };
