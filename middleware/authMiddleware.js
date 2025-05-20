@@ -17,4 +17,47 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// 👇 Add this function to fix the error
+const protectWholesaler = (req, res, next) => {
+  if (req.user?.role !== 'Wholesaler') {
+    return res.status(403).json({ message: 'Access denied: Not a wholesaler' });
+  }
+  next();
+};
+const protectManufacturer = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const user = await User.findById(decoded.id);
+
+      if (!user || user.role !== "Manufacturer") {
+        return res.status(401).json({ message: "Not authorized as manufacturer" });
+      }
+
+      req.user = user;
+      next();
+    } catch (err) {
+      console.error("Auth error:", err.message);
+      return res.status(401).json({ message: "Token failed" });
+    }
+  }
+
+  if (!token) {
+    return res.status(401).json({ message: "Not authorized, no token" });
+  }
+};
+
+// ✅ Export both functions
+module.exports = {
+  protect,
+  protectWholesaler,
+  protectManufacturer,
+};

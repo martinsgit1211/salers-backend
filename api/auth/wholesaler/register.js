@@ -4,23 +4,27 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../../models/User");
 
-// POST /api/auth/wholesaler/register
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { companyName, email, password, businessType } = req.body;
+
+  if (!companyName || !email || !password || !businessType) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
 
   try {
     const existing = await User.findOne({ email, role: "Wholesaler" });
     if (existing) {
-      return res.status(400).json({ message: "Wholesaler already exists" });
+      return res.status(400).json({ message: "Wholesaler already exists." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      name,
+      companyName,
       email,
       password: hashedPassword,
       role: "Wholesaler",
+      businessType,
     });
 
     await newUser.save();
@@ -32,12 +36,14 @@ router.post("/register", async (req, res) => {
     );
 
     res.status(201).json({
+      message: "Wholesaler registered successfully.",
       token,
       user: {
         id: newUser._id,
-        name: newUser.name,
+        companyName: newUser.companyName,
         email: newUser.email,
         role: newUser.role,
+        businessType: newUser.businessType,
       },
     });
   } catch (err) {
