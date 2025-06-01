@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { createOrder, getOrdersByUser, getOrderStatsForWholesaler } = require("../controllers/orderController");
-const { protect, protectWholesaler } = require("../middleware/authMiddleware");
+const { createOrder, getOrdersByUser, getOrderStatsForWholesaler,  updateOrderStatus } = require("../controllers/orderController");
+const { protect, protectWholesaler, protectManufacturer } = require("../middleware/authMiddleware");
 
 // POST /api/orders - Create order (for logged-in wholesaler)
 router.post("/", protect, protectWholesaler, createOrder);
@@ -11,5 +11,8 @@ router.post("/", protect, protectWholesaler, createOrder);
 router.get("/my", protect, protectWholesaler, getOrdersByUser);
 
 router.get("/stats", protect, getOrderStatsForWholesaler)
+
+// PATCH route for manufacturers to update order status
+router.put("/:id/status", protect, protectManufacturer, updateOrderStatus);
 
 module.exports = router;

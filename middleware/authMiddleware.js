@@ -24,6 +24,36 @@ const protectWholesaler = (req, res, next) => {
   }
   next();
 };
+// const protectManufacturer = async (req, res, next) => {
+//   let token;
+
+//   if (
+//     req.headers.authorization &&
+//     req.headers.authorization.startsWith("Bearer")
+//   ) {
+//     try {
+//       token = req.headers.authorization.split(" ")[1];
+
+//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//       const user = await User.findById(decoded.id);
+
+//       if (!user || user.role !== "Manufacturer") {
+//         return res.status(401).json({ message: "Not authorized as manufacturer" });
+//       }
+
+//       req.user = user;
+//       next();
+//     } catch (err) {
+//       console.error("Auth error:", err.message);
+//       return res.status(401).json({ message: "Token failed" });
+//     }
+//   }
+
+//   if (!token) {
+//     return res.status(401).json({ message: "Not authorized, no token" });
+//   }
+// };
 const protectManufacturer = async (req, res, next) => {
   let token;
 
@@ -33,27 +63,27 @@ const protectManufacturer = async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
-
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       const user = await User.findById(decoded.id);
 
       if (!user || user.role !== "Manufacturer") {
-        return res.status(401).json({ message: "Not authorized as manufacturer" });
+        return res.status(403).json({ message: "Not authorized as manufacturer" });
       }
 
       req.user = user;
-      next();
+      return next(); // ✅ Successful auth
     } catch (err) {
       console.error("Auth error:", err.message);
-      return res.status(401).json({ message: "Token failed" });
+      return res.status(401).json({ message: "Token failed or invalid" });
     }
   }
 
-  if (!token) {
-    return res.status(401).json({ message: "Not authorized, no token" });
-  }
+  // ✅ If no token provided at all
+  return res.status(401).json({ message: "Not authorized, no token" });
 };
+
+
 
 // ✅ Export both functions
 module.exports = {

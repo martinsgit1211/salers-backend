@@ -47,6 +47,8 @@ const createOrder = async (req, res) => {
       await Notification.create({
         manufacturer: note.manufacturerId,
         message: note.message,
+        orderId: order._id,
+        status: order.status,
       });
 
       await sendEmail(note.email, "New Product Order", note.message);
@@ -90,9 +92,59 @@ const getOrderStatsForWholesaler = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch stats", error: err.message });
     }
   };
+
+  // PATCH /api/orders/:id/status
+// const updateOrderStatus = async (req, res) => {
+//   const { status } = req.body;
+//   const order = await Order.findById(req.params.id);
+
+//   if (!order) {
+//     return res.status(404).json({ message: "Order not found" });
+//   }
+
+//   // Only manufacturers should update this
+//   if (req.user.role !== "Manufacturer") {
+//     return res.status(403).json({ message: "Unauthorized" });
+//   }
+
+//   order.status = status;
+//   await order.save();
+
+//   res.json({ message: `Order ${status}`, order });
+// };
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const { status } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Order ID is required" });
+    }
+
+    const order = await Order.findById(_id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (req.user.role !== "Manufacturer") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.json({ message: `Order updated to ${status}`, order });
+  } catch (error) {
+    console.error("Update Order Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
   
   module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderStatsForWholesaler,
+    updateOrderStatus,
   };
