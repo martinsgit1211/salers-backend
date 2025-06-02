@@ -112,39 +112,39 @@ const getOrderStatsForWholesaler = async (req, res) => {
 
 //   res.json({ message: `Order ${status}`, order });
 // };
-const updateOrderStatus = async (req, res) => {
-  try {
-    const { _id } = req.params;
-    const { status } = req.body;
+// const updateOrderStatus = async (req, res) => {
+//   try {
+//     const { _id } = req.params;
+//     const { status } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: "Order ID is required" });
-    }
+//     if (!id) {
+//       return res.status(400).json({ message: "Order ID is required" });
+//     }
 
-    const order = await Order.findById(_id);
+//     const order = await Order.findById(_id);
 
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
 
-    if (req.user.role !== "Manufacturer") {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
+//     if (req.user.role !== "Manufacturer") {
+//       return res.status(403).json({ message: "Unauthorized" });
+//     }
 
-    order.status = status;
-    await order.save();
+//     order.status = status;
+//     await order.save();
 
-    res.json({ message: `Order updated to ${status}`, order });
-  } catch (error) {
-    console.error("Update Order Error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+//     res.json({ message: `Order updated to ${status}`, order });
+//   } catch (error) {
+//     console.error("Update Order Error:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
 
   
   module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderStatsForWholesaler,
-    updateOrderStatus,
+    // updateOrderStatus,
   };
