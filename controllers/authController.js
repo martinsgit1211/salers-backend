@@ -7,11 +7,12 @@ let blacklistedTokens = [];
 
 // Register user
 const registerUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  // const { name, email, password, role } = req.body;
+  const { companyName, email, password, role, businessType } = req.body;
 
-  if (!name || !email || !password || !role) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+ if (!companyName || !email || !password || !role) {
+  return res.status(400).json({ message: "All fields are required" });
+}
 
   try {
     const existingUser = await User.findOne({ email, role });
@@ -20,7 +21,14 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword, role });
+    // const user = new User({ name, email, password: hashedPassword, role });
+    const user = new User({
+  companyName,
+  email,
+  password: hashedPassword,
+  role,
+  businessType,
+});
     await user.save();
 
     res.status(201).json({ message: `${role} registered successfully` });
